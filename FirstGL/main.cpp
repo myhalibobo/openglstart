@@ -5,7 +5,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
+#include "Camera.h"
 #include <iostream>
 #include "CELLMath.hpp"
 #include "Shader.h"
@@ -13,17 +13,56 @@
 #include "stb_image.h"
 const float winW = 800;
 const float winH = 640;
-unsigned int _VBO, lightVAO, _EBO;
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+bool firstMouse = true;
+float lastX = winW / 2.0f;
+float lastY = winH / 2.0f;
+unsigned int _VBO, lightVAO, _EBO, lampVAO;
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window , true);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.ProcessMouseScroll(yoffset);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
 	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+	lastX = xpos;
+	lastY = ypos;
+
+	camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+
+void processInput(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 unsigned int createTexture(const char *texturePath , bool isPng) {
@@ -132,19 +171,21 @@ void initVAO() {
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	//--------------light-----------//
-	unsigned int lampVAO;
 	glGenVertexArrays(1, &lampVAO);
+	glBindVertexArray(lampVAO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT , GL_FALSE , 3 * sizeof(float) , (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT , GL_FALSE , 8 * sizeof(float) , (void*)0);
+	glEnableVertexAttribArray(0);
 
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 GLFWwindow* initGL(){
 	glfwInit();
@@ -160,7 +201,9 @@ GLFWwindow* initGL(){
 		return nullptr;
 	}
 	glfwMakeContextCurrent(window);
-
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -168,7 +211,6 @@ GLFWwindow* initGL(){
 	}
 
 	glViewport(0, 0, winW, winH);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	return window;
 }
@@ -184,8 +226,6 @@ int main() {
 	Shader lampShader("shader/lightShader.vsh", "shader/lampShader.hlsl");
 	lampShader.use();
 	
-
-
 	Shader lightShader("shader/lightShader.vsh", "shader/lightShader.hlsl");
 	lightShader.use();
 	lightShader.setInt("ourTexture0", 0);
@@ -193,35 +233,35 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	std::function<void(unsigned int, glm::vec3, glm::vec3)> createCube = [=](unsigned int ID, glm::vec3 pos, glm::vec3 scale) {
+		glUseProgram(ID);
+		glm::mat4 model;
+		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::scale(model, scale);
+		model = glm::translate(model, pos);
+
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(camera.Zoom), winW / winH, 0.1f, 100.0f);
+		glm::mat4 transform;
+		transform = projection * view * model;
+
+		unsigned int trans = glGetUniformLocation(ID, "trans");
+		glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transform));
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	};
+	glm::vec3 lightPos(3.2f, 2.0f, 2.0f);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		std::function<void(unsigned int, glm::vec3, glm::vec3)> createCube = [=](unsigned int ID, glm::vec3 pos, glm::vec3 scale) {
-			glUseProgram(ID);
-			glm::mat4 model;
-			model = glm::translate(model, pos);
-			model = glm::scale(model, scale);
-
-			glm::mat4 view;
-			view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			glm::mat4 projection;
-			projection = glm::perspective(glm::radians(45.0f), winW / winH, 0.1f, 100.0f);
-			glm::mat4 transform;
-			transform = projection * view * model;
-
-			unsigned int trans = glGetUniformLocation(ID, "trans");
-			glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transform));
-
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		};
-
-
-		glBindVertexArray(lightVAO);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId_0);
@@ -232,9 +272,11 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, textureId_1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		glBindVertexArray(lightVAO);
 
-		glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 		createCube(lightShader.ID, glm::vec3(0), glm::vec3(1));
+		
+		glBindVertexArray(lampVAO);
 		createCube(lampShader.ID, lightPos, glm::vec3(0.2));
 
 
