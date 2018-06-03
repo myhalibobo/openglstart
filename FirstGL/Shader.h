@@ -2,6 +2,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 #include <glad/glad.h>
+#include "glm/gtc/matrix_transform.hpp"
 #include "string"
 #include <fstream>
 #include <sstream>
@@ -19,7 +20,9 @@ public:
 	void setFloat(const string &name, float value) const;
 	void setVec3(const string &name, float x, float y, float z) const;
 
-	
+	void setMat4(const string &name, glm::mat4 &mat) const {
+		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	}
 };
 
 #endif

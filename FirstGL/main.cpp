@@ -99,47 +99,47 @@ unsigned int createTexture(const char *texturePath , bool isPng) {
 
 void initVAO() {
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f ,	 0.0f, 0.0f,      0.0f, 0.0f, -1.0f,
+		0.5f, -0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 1.0f, 0.0f,	  0.0f, 0.0f, -1.0f,
+		0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 1.0f, 1.0f,	  0.0f, 0.0f, -1.0f,
+		0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 1.0f, 1.0f,	  0.0f, 0.0f, -1.0f,
+		-0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 0.0f, 1.0f,	  0.0f, 0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f ,	 0.0f, 0.0f,      0.0f, 0.0f, -1.0f,
 
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 1.0f ,	 0.0f, 0.0f,	  0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 1.0f ,	 1.0f, 0.0f,	  0.0f, 0.0f, 1.0f,
+		0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 1.0f ,	 1.0f, 1.0f,	  0.0f, 0.0f, 1.0f,
+		0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 1.0f ,	 1.0f, 1.0f,	  0.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 1.0f ,	 0.0f, 1.0f,	  0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 1.0f ,	 0.0f, 0.0f,	  0.0f, 0.0f, 1.0f,
 
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  1.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		1.0f, 0.0f, 1.0f ,	 1.0f, 0.0f,	  -1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f,		1.0f, 0.0f, 1.0f ,	 1.0f, 1.0f,	  -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 1.0f ,	 0.0f, 1.0f,      -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 1.0f ,	 0.0f, 1.0f,      -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		1.0f, 0.0f, 1.0f ,	 0.0f, 0.0f,	  -1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		1.0f, 0.0f, 1.0f ,	 1.0f, 0.0f,	  -1.0f, 0.0f, 0.0f,
 
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 0.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 0.0f ,	 1.0f, 0.0f,	  1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 0.0f ,	 1.0f, 1.0f,	  1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		1.0f, 1.0f, 0.0f ,	 0.0f, 1.0f,	  1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		1.0f, 1.0f, 0.0f ,	 0.0f, 1.0f,	  1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		1.0f, 1.0f, 0.0f ,	 0.0f, 0.0f,	  1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 0.0f ,	 1.0f, 0.0f,	  1.0f, 0.0f, 0.0f,
 
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	0.5f, 1.0f, 1.0f ,	 0.0f, 1.0f,      0.0f, -1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		0.5f, 1.0f, 1.0f ,	 1.0f, 1.0f,	  0.0f, -1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		0.5f, 1.0f, 1.0f ,	 1.0f, 0.0f,	  0.0f, -1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		0.5f, 1.0f, 1.0f ,	 1.0f, 0.0f,	  0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		0.5f, 1.0f, 1.0f ,	 0.0f, 0.0f,	  0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	0.5f, 1.0f, 1.0f ,	 0.0f, 1.0f,      0.0f, -1.0f, 0.0f,
 
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f , 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f ,  0.0f, 1.0f
+		-0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 0.0f, 1.0f,	  0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 1.0f, 1.0f,	  0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 1.0f ,	 1.0f, 0.0f,	  0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 1.0f ,	 1.0f, 0.0f,	  0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 1.0f ,	 0.0f, 0.0f,	  0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f,		1.0f, 1.0f, 1.0f ,	 0.0f, 1.0f,	  0.0f, 1.0f, 0.0f
 	};
 		
 	//float vertices[] = {
@@ -164,13 +164,15 @@ void initVAO() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(sizeof(float) * 3));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(sizeof(float) * 6));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 3));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 6));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 8));
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 
 	//--------------light-----------//
 	glGenVertexArrays(1, &lampVAO);
@@ -178,7 +180,7 @@ void initVAO() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT , GL_FALSE , 8 * sizeof(float) , (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT , GL_FALSE , 11 * sizeof(float) , (void*)0);
 	glEnableVertexAttribArray(0);
 
 }
@@ -218,7 +220,7 @@ int main() {
 	unsigned int textureId_1 = createTexture("awesomeface.png", true);
 
 	initVAO();
-	Shader lampShader("shader/lightShader.vsh", "shader/lampShader.hlsl");
+	Shader lampShader("shader/lampShader.vsh", "shader/lampShader.hlsl");
 	lampShader.use();
 	lampShader.setInt("ourTexture0", 0);
 	lampShader.setInt("ourTexture1", 1);
@@ -232,33 +234,38 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	std::function<void(unsigned int, glm::vec3, glm::vec3)> createCube = [=](unsigned int ID, glm::vec3 pos, glm::vec3 scale) {
-		glUseProgram(ID);
+	std::function<void(Shader, glm::vec3, glm::vec3)> createCube = [=](Shader shader, glm::vec3 pos, glm::vec3 scale) {
+		glUseProgram(shader.ID);
 		
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureId_0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, textureId_0);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textureId_1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		glBindVertexArray(lightVAO);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, textureId_1);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		//glBindVertexArray(lightVAO);
 
 		glm::mat4 model;
 		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
-		model = glm::scale(model, scale);
 		model = glm::translate(model, pos);
-
+		model = glm::scale(model, scale);
+		
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Zoom), winW / winH, 0.1f, 100.0f);
-		glm::mat4 transform;
-		transform = projection * view * model;
 
-		unsigned int trans = glGetUniformLocation(ID, "trans");
-		glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transform));
+		shader.setMat4("model", model);
+		shader.setMat4("view", view);
+		shader.setMat4("projection", projection);
+
+		//glm::mat4 transform;
+		//transform = projection * view * model;
+
+		//unsigned int trans = glGetUniformLocation(shader.ID, "trans");
+		//glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transform));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	};
@@ -274,11 +281,11 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		createCube(lightShader.ID, glm::vec3(0), glm::vec3(1));
+		lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+		createCube(lightShader, glm::vec3(0), glm::vec3(1));
 		
 		glBindVertexArray(lampVAO);
-		createCube(lampShader.ID, lightPos, glm::vec3(0.2));
-
+		createCube(lampShader, lightPos, glm::vec3(0.2));
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
