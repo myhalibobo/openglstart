@@ -5,7 +5,8 @@ in vec2 textCoord;
 
 uniform sampler2D ourTexture0;
 uniform sampler2D ourTexture1;
-
+uniform vec3 objectColor;
+uniform vec3 lightColor;
 void main(){
 	FragColor = vec4(1.0);
 }
