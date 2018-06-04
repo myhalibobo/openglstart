@@ -235,24 +235,22 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	std::function<void(Shader, glm::vec3, glm::vec3)> createCube = [=](Shader shader, glm::vec3 pos, glm::vec3 scale) {
-		glUseProgram(shader.ID);
-		
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, textureId_0);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureId_0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, textureId_1);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		//glBindVertexArray(lightVAO);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textureId_1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
 		glm::mat4 model;
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+		
 		model = glm::translate(model, pos);
 		model = glm::scale(model, scale);
-		
+		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Zoom), winW / winH, 0.1f, 100.0f);
@@ -260,12 +258,6 @@ int main() {
 		shader.setMat4("model", model);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
-
-		//glm::mat4 transform;
-		//transform = projection * view * model;
-
-		//unsigned int trans = glGetUniformLocation(shader.ID, "trans");
-		//glUniformMatrix4fv(trans, 1, GL_FALSE, glm::value_ptr(transform));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	};
@@ -281,9 +273,20 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//------------------light-------------//
+		glUseProgram(lightShader.ID);
+		glBindVertexArray(lightVAO);
+		
+		lightPos.x = sin(glfwGetTime()) * 2;
+		lightPos.y = 0;
+		lightPos.z = cos(glfwGetTime()) * 2;
+		
 		lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+		lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 		createCube(lightShader, glm::vec3(0), glm::vec3(1));
 		
+		//------------------lamp-------------//
+		glUseProgram(lampShader.ID);
 		glBindVertexArray(lampVAO);
 		createCube(lampShader, lightPos, glm::vec3(0.2));
 
@@ -292,6 +295,7 @@ int main() {
 	}
 
 	glDeleteVertexArrays(1, &lightVAO);
+	glDeleteVertexArrays(1, &lampVAO);
 	glDeleteBuffers(1, &_VBO);
 	glDeleteBuffers(1, &_EBO);
 

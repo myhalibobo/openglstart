@@ -12,32 +12,27 @@ uniform sampler2D ourTexture1;
 uniform vec3 objectColor;
 uniform vec3 lightColor;
 uniform vec3 lightPos;
+uniform vec3 viewPos;
 
 void main(){
-	float ambientStrength = 0.1f;
+	// ambient
+	float ambientStrength = 0.5;
 	vec3 ambient = ambientStrength * lightColor;
 
+	// diffuse 
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);
-	float diff = max(dot(norm, lightDir), 0.0f);
+	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
-	vec3 result = (ambient + diffuse) * objectColor;
-	
-	vec3 Temp = Normal;
-	/*if (Temp.x < 0)
-		Temp.x = 1;
-	if (Temp.y < 0)
-		Temp.y = 1;
-	if (Temp.z < 0)
-		Temp.z = 1;*/
-	if (Temp.x == 0 && Temp.y == 0 && Temp.z == 0) {
-		Temp = vec3(0.5, 0.5, 1);
-	}
-	FragColor = outColor;//vec4(vec3(outColor), 1.0);
+	// specular
+	float specularStrength = 0.9;
+	vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 reflectDir = reflect(-lightDir, norm);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128);
+	vec3 specular = specularStrength * spec * lightColor;
 
-	//FragColor = texture(ourTexture0 , textCoord);
-	//FragColor = mix(texture(ourTexture0, textCoord), texture(ourTexture1, textCoord), 0.2) * outColor;
-	//FragColor = mix(texture(ourTexture0, textCoord), texture(ourTexture1, vec2(textCoord.x, textCoord.y)), 0.2);
-	//FragColor = vec4(1);
+	vec3 result = (ambient + diffuse + specular) * objectColor;
+	FragColor = vec4(result, 1.0);
+
 }
