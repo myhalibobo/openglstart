@@ -20,7 +20,7 @@ float lastX = winW / 2.0f;
 float lastY = winH / 2.0f;
 unsigned int _VBO, lightVAO, _EBO, lampVAO;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(1.2f, 0.4f, 2.0f);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -197,10 +197,13 @@ GLFWwindow* initGL(){
 		glfwTerminate();
 		return nullptr;
 	}
+
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -216,51 +219,55 @@ int main() {
 	
 	GLFWwindow* window = initGL();
 	
-	unsigned int textureId_0 = createTexture("wall.jpg",false);
-	unsigned int textureId_1 = createTexture("awesomeface.png", true);
+	unsigned int textureId_0 = createTexture("container2.png",true);
+	unsigned int textureId_1 = createTexture("container2_specular.png", true);
 
 	initVAO();
+
 	Shader lampShader("shader/lampShader.vsh", "shader/lampShader.hlsl");
 	lampShader.use();
-	lampShader.setInt("ourTexture0", 0);
-	lampShader.setInt("ourTexture1", 1);
 
 	Shader lightShader("shader/lightShader.vsh", "shader/lightShader.hlsl");
 	lightShader.use();
-	lightShader.setInt("ourTexture0", 0);
-	lightShader.setInt("ourTexture1", 1);
-	
+	lightShader.setInt("material.diffuse", 0);
+	lightShader.setInt("material.specular", 1);
 
 	glEnable(GL_DEPTH_TEST);
 
-	std::function<void(Shader, glm::vec3, glm::vec3)> createCube = [=](Shader shader, glm::vec3 pos, glm::vec3 scale) {
+	std::function<void(Shader, glm::vec3, glm::vec3, float)> createCube = [=](Shader shader, glm::vec3 pos, glm::vec3 scale, float angle) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId_0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, textureId_1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-		glm::mat4 model;
 		
+		glm::mat4 model;
 		model = glm::translate(model, pos);
 		model = glm::scale(model, scale);
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, angle, glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.setMat4("model", model);
 
 		glm::mat4 view = camera.GetViewMatrix();
+		shader.setMat4("view", view);
+
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Zoom), winW / winH, 0.1f, 100.0f);
-
-		shader.setMat4("model", model);
-		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	};
 	
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -273,43 +280,19 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//------------------light-------------//
-		glUseProgram(lightShader.ID);
-		glBindVertexArray(lightVAO);
-		
-		//lightPos.x = sin(glfwGetTime()) * 2;
-		//lightPos.y = 0;
-		//lightPos.z = cos(glfwGetTime()) * 2;
-		lightPos.y = 0.5;
-		lightPos.z = 3;
-		lightPos.x = 0;
-		glm::vec3 lightColor;
-		lightColor.x = sin(glfwGetTime() * 2.0f);
-		lightColor.y = cos(glfwGetTime() * 2.0f);
-		lightColor.z = sin(glfwGetTime() * 2.0f);
-		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+		for (int i = 0; i < sizeof(cubePositions) / sizeof(glm::vec3); i++) {
+			glUseProgram(lightShader.ID);
+			glBindVertexArray(lightVAO);
+			lightShader.setFloat("material.shininess", 32.0f);
+			lightShader.setVec3("lamp.ambient", 0.2f, 0.2f, 0.2f);
+			lightShader.setVec3("lamp.diffuse", 0.5f, 0.5f, 0.5f);
+			lightShader.setVec3("lamp.specular", 1.0f, 1.0f, 1.0f);
+			lightShader.setVec3("lamp.direction", -0.2f, -1.0f, -0.3f);
 
-		lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+			lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 
-		lightShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		lightShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-		lightShader.setFloat("material.shininess", 32.0f);
-
-		lightShader.setVec3("lamp.ambient", ambientColor);
-		lightShader.setVec3("lamp.diffuse", diffuseColor);
-		lightShader.setVec3("lamp.specular", 1.0f, 1.0f, 1.0f);
-		lightShader.setVec3("lamp.position", lightPos.x, lightPos.y, lightPos.z);
-
-		
-		lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
-		createCube(lightShader, glm::vec3(0), glm::vec3(1));
-		
-		//------------------lamp-------------//
-		glUseProgram(lampShader.ID);
-		glBindVertexArray(lampVAO);
-		createCube(lampShader, lightPos, glm::vec3(0.2));
+			createCube(lightShader, cubePositions[i], glm::vec3(1), glm::radians(i * 20.0f));
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
