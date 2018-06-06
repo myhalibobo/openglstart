@@ -199,7 +199,7 @@ GLFWwindow* initGL(){
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -229,8 +229,7 @@ int main() {
 	lightShader.use();
 	lightShader.setInt("ourTexture0", 0);
 	lightShader.setInt("ourTexture1", 1);
-	lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-	lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+	
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -277,11 +276,33 @@ int main() {
 		glUseProgram(lightShader.ID);
 		glBindVertexArray(lightVAO);
 		
-		lightPos.x = sin(glfwGetTime()) * 2;
-		lightPos.y = 0;
-		lightPos.z = cos(glfwGetTime()) * 2;
+		//lightPos.x = sin(glfwGetTime()) * 2;
+		//lightPos.y = 0;
+		//lightPos.z = cos(glfwGetTime()) * 2;
+		lightPos.y = 0.5;
+		lightPos.z = 3;
+		lightPos.x = 0;
+		glm::vec3 lightColor;
+		lightColor.x = sin(glfwGetTime() * 2.0f);
+		lightColor.y = cos(glfwGetTime() * 2.0f);
+		lightColor.z = sin(glfwGetTime() * 2.0f);
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+
+		lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+
+		lightShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		lightShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		lightShader.setFloat("material.shininess", 32.0f);
+
+		lightShader.setVec3("lamp.ambient", ambientColor);
+		lightShader.setVec3("lamp.diffuse", diffuseColor);
+		lightShader.setVec3("lamp.specular", 1.0f, 1.0f, 1.0f);
+		lightShader.setVec3("lamp.position", lightPos.x, lightPos.y, lightPos.z);
+
 		
-		lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 		lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 		createCube(lightShader, glm::vec3(0), glm::vec3(1));
 		
