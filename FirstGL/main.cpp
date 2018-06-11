@@ -20,7 +20,7 @@ float lastX = winW / 2.0f;
 float lastY = winH / 2.0f;
 unsigned int _VBO, lightVAO, _EBO, lampVAO;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-glm::vec3 lightPos(1.2f, 0.4f, 2.0f);
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -284,15 +284,25 @@ int main() {
 			glUseProgram(lightShader.ID);
 			glBindVertexArray(lightVAO);
 			lightShader.setFloat("material.shininess", 32.0f);
+			
 			lightShader.setVec3("lamp.ambient", 0.2f, 0.2f, 0.2f);
 			lightShader.setVec3("lamp.diffuse", 0.5f, 0.5f, 0.5f);
 			lightShader.setVec3("lamp.specular", 1.0f, 1.0f, 1.0f);
-			lightShader.setVec3("lamp.direction", -0.2f, -1.0f, -0.3f);
 
+			lightShader.setVec3("lamp.position", lightPos);
+
+			lightShader.setFloat("lamp.constant", 1.0f);
+			lightShader.setFloat("lamp.linear", 0.09f);
+			lightShader.setFloat("lamp.quadratic", 0.032f);
+			
 			lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 
 			createCube(lightShader, cubePositions[i], glm::vec3(1), glm::radians(i * 20.0f));
 		}
+
+		glUseProgram(lampShader.ID);
+		glBindVertexArray(lampVAO);
+		createCube(lampShader, lightPos, glm::vec3(0.2), 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
