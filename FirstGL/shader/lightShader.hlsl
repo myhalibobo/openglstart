@@ -8,6 +8,9 @@ struct Material {
 struct Lamp {
 	vec3 position;
 
+	vec3 direction;
+	float cutoff;
+
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -30,28 +33,39 @@ uniform Material material;
 
 
 void main(){
-	// ambient
-	vec3 ambient = lamp.ambient * texture(material.diffuse , textCoord).rgb;
-
-	// diffuse 
-	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lamp.position - FragPos);
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = lamp.diffuse * diff * texture(material.diffuse , textCoord).rgb;
+	
+	float theta = dot(lightDir, normalize(-lamp.direction));
 
-	// specular
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = lamp.specular * spec * texture(material.specular, textCoord).rgb;
+	if (theta > lamp.cutoff) {
+		// ambient
+		vec3 ambient = lamp.ambient * texture(material.diffuse, textCoord).rgb;
 
-	float distance = length(lamp.position - FragPos);
-	float attenuation = 1.0 / (lamp.constant + lamp.linear * distance + lamp.quadratic * (distance * distance));
+		// diffuse 
+		vec3 norm = normalize(Normal);
+		
+		float diff = max(dot(norm, lightDir), 0.0);
+		vec3 diffuse = lamp.diffuse * diff * texture(material.diffuse, textCoord).rgb;
 
-	ambient *= attenuation;
-	diffuse *= attenuation;
-	specular *= attenuation;
+		// specular
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec3 reflectDir = reflect(-lightDir, norm);
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+		vec3 specular = lamp.specular * spec * texture(material.specular, textCoord).rgb;
 
-	vec3 result = ambient + diffuse + specular;
-	FragColor = vec4(result , 1.0);
+		float distance = length(lamp.position - FragPos);
+		float attenuation = 1.0 / (lamp.constant + lamp.linear * distance + lamp.quadratic * (distance * distance));
+
+		ambient *= attenuation;
+		diffuse *= attenuation;
+		specular *= attenuation;
+
+		vec3 result = ambient + diffuse + specular;
+		FragColor = vec4(result, 1.0);
+	}
+	else {
+		FragColor = vec4(lamp.ambient * texture(material.diffuse, textCoord).rgb, 1.0);
+	}
+
+	
 }

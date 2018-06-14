@@ -289,11 +289,14 @@ int main() {
 			lightShader.setVec3("lamp.diffuse", 0.5f, 0.5f, 0.5f);
 			lightShader.setVec3("lamp.specular", 1.0f, 1.0f, 1.0f);
 
-			lightShader.setVec3("lamp.position", lightPos);
+			lightShader.setVec3("lamp.position", camera.Position);
+			lightShader.setVec3("lamp.direction", camera.Front);
+			lightShader.setFloat("lamp.cutoff", glm::cos(glm::radians(12.5f)));
 
 			lightShader.setFloat("lamp.constant", 1.0f);
 			lightShader.setFloat("lamp.linear", 0.09f);
 			lightShader.setFloat("lamp.quadratic", 0.032f);
+
 			
 			lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 
