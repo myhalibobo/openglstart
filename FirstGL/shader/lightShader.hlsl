@@ -9,7 +9,8 @@ struct Lamp {
 	vec3 position;
 
 	vec3 direction;
-	float cutoff;
+	float cutOff;
+	float outerCutOff;
 
 	vec3 ambient;
 	vec3 diffuse;
@@ -33,17 +34,14 @@ uniform Material material;
 
 
 void main(){
-	vec3 lightDir = normalize(lamp.position - FragPos);
+		
 	
-	float theta = dot(lightDir, normalize(-lamp.direction));
-
-	if (theta > lamp.cutoff) {
 		// ambient
 		vec3 ambient = lamp.ambient * texture(material.diffuse, textCoord).rgb;
 
 		// diffuse 
 		vec3 norm = normalize(Normal);
-		
+		vec3 lightDir = normalize(lamp.position - FragPos);
 		float diff = max(dot(norm, lightDir), 0.0);
 		vec3 diffuse = lamp.diffuse * diff * texture(material.diffuse, textCoord).rgb;
 
@@ -52,6 +50,13 @@ void main(){
 		vec3 reflectDir = reflect(-lightDir, norm);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 		vec3 specular = lamp.specular * spec * texture(material.specular, textCoord).rgb;
+
+		// spotlight (soft edges)
+		float theta = dot(lightDir, normalize(-lamp.direction));
+		float epsilon = (lamp.cutOff - lamp.outerCutOff);
+		float intensity = clamp((theta - lamp.outerCutOff) / epsilon, 0.0, 1.0);
+		diffuse *= intensity;
+		specular *= intensity;
 
 		float distance = length(lamp.position - FragPos);
 		float attenuation = 1.0 / (lamp.constant + lamp.linear * distance + lamp.quadratic * (distance * distance));
@@ -62,10 +67,5 @@ void main(){
 
 		vec3 result = ambient + diffuse + specular;
 		FragColor = vec4(result, 1.0);
-	}
-	else {
-		FragColor = vec4(lamp.ambient * texture(material.diffuse, textCoord).rgb, 1.0);
-	}
 
-	
 }
