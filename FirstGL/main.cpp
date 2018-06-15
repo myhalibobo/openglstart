@@ -285,19 +285,15 @@ int main() {
 			glBindVertexArray(lightVAO);
 			lightShader.setFloat("material.shininess", 32.0f);
 			
-			lightShader.setVec3("lamp.ambient", 0.1f, 0.1f, 0.1f);
-			lightShader.setVec3("lamp.diffuse", 0.8f, 0.8f, 0.8f);
+			lightShader.setVec3("lamp.ambient", 0.2f, 0.2f, 0.2f);
+			lightShader.setVec3("lamp.diffuse", 0.5f, 0.5f, 0.5f);
 			lightShader.setVec3("lamp.specular", 1.0f, 1.0f, 1.0f);
 
-			lightShader.setVec3("lamp.position", camera.Position);
-			lightShader.setVec3("lamp.direction", camera.Front);
-			lightShader.setFloat("lamp.cutOff", glm::cos(glm::radians(12.5f)));
-			lightShader.setFloat("lamp.outerCutoff", glm::cos(glm::radians(17.5f)));
+			lightShader.setVec3("lamp.position", lightPos);
 
 			lightShader.setFloat("lamp.constant", 1.0f);
 			lightShader.setFloat("lamp.linear", 0.09f);
 			lightShader.setFloat("lamp.quadratic", 0.032f);
-
 			
 			lightShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 
