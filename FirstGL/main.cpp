@@ -360,8 +360,11 @@ int main() {
 		//	createCube(lampShader, pointLightPositions[i], glm::vec3(0.2), 0);
 		//}
 
-		// don't forget to enable shader before setting uniforms
+		glUseProgram(lampShader.ID);
+		glBindVertexArray(lampVAO);
+		createCube(lampShader, lightPos, glm::vec3(0.2), 0);
 
+		// don't forget to enable shader before setting uniforms
 		modelShader.use();
 		//vec3 position;
 		//vec3 ambient;
@@ -375,7 +378,7 @@ int main() {
 		//float shininess;
 		modelShader.setFloat("pointLight.shininess", 32.0f);
 
-		modelShader.setVec3("pointLight.ambient", 0.1f, 0.1f, 0.1f);
+		modelShader.setVec3("pointLight.ambient", 0.5f, 0.5f, 0.5f);
 		modelShader.setVec3("pointLight.diffuse", 0.8f, 0.8f, 0.8f);
 		modelShader.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f);
 
