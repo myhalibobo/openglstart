@@ -18,7 +18,7 @@ float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX = winW / 2.0f;
 float lastY = winH / 2.0f;
-unsigned int _VBO, lightVAO, _EBO, lampVAO;
+unsigned int _VBO, lightVAO, _EBO, lampVAO, floorVAO, floorVBO;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 glm::vec3 lightPos(1.0f, 0.0f, 1.0f);
 
@@ -28,6 +28,17 @@ glm::vec3 pointLightPositions[] = {
 	glm::vec3(-4.0f,  2.0f, -12.0f),
 	glm::vec3(0.0f,  0.0f, -3.0f)
 };
+
+float planeVertices[] = {
+	5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+	-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+
+	5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+	5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+};
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -165,7 +176,6 @@ void initVAO() {
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-
 	//--------------light-----------//
 	glGenVertexArrays(1, &lampVAO);
 	glBindVertexArray(lampVAO);
@@ -175,6 +185,19 @@ void initVAO() {
 	glVertexAttribPointer(0, 3, GL_FLOAT , GL_FALSE , 8 * sizeof(float) , (void*)0);
 	glEnableVertexAttribArray(0);
 
+	//-----------------floor--------------------//
+	glGenVertexArrays(1, &floorVAO);
+	glBindVertexArray(floorVAO);
+
+	glGenBuffers(1, &floorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
 }
 GLFWwindow* initGL(){
 	glfwInit();
@@ -212,31 +235,20 @@ int main() {
 	GLFWwindow* window = initGL();
 	
 	unsigned int textureId_0 = createTexture("container2.png",true);
-	unsigned int textureId_1 = createTexture("container2_specular.png", true);
+	//unsigned int textureId_1 = createTexture("container2_specular.png", true);
 
 	initVAO();
 
-	Shader lampShader("shader/lampShader.vsh", "shader/lampShader.hlsl");
-	lampShader.use();
-
-	Shader lightShader("shader/lightShader.vsh", "shader/lightShader.hlsl");
-	lightShader.use();
-	lightShader.setInt("material.diffuse", 0);
-	lightShader.setInt("material.specular", 1);
-
-	Model ourModel("objects/nanosuit/nanosuit.obj");
-	Shader modelShader("shader/model.vsh", "shader/model.hlsl");
-
+	Shader deepShader("shader/heighGL.vsh", "shader/heighGL.hlsl");
+	deepShader.use();
 
 	glEnable(GL_DEPTH_TEST);
-
-
 
 	std::function<void(Shader, glm::vec3, glm::vec3, float)> createCube = [=](Shader shader, glm::vec3 pos, glm::vec3 scale, float angle) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId_0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textureId_1);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, textureId_1);
 		
 		glm::mat4 model;
 		model = glm::translate(model, pos);
@@ -253,19 +265,6 @@ int main() {
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	};
-	
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -277,43 +276,31 @@ int main() {
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUseProgram(lampShader.ID);
-		glBindVertexArray(lampVAO);
-		createCube(lampShader, lightPos, glm::vec3(0.2), 0);
-
-
-		modelShader.use();
-
-		modelShader.setFloat("pointLight.shininess", 32.0f);
-
-		modelShader.setVec3("pointLight.ambient", 0.5f, 0.5f, 0.5f);
-		modelShader.setVec3("pointLight.diffuse", 0.8f, 0.8f, 0.8f);
-		modelShader.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f);
-
-		modelShader.setVec3("pointLight.position", lightPos);
-
-		modelShader.setFloat("pointLight.constant", 1.0f);
-		modelShader.setFloat("pointLight.linear", 0.09f);
-		modelShader.setFloat("pointLight.quadratic", 0.032f);
-
-		modelShader.setVec3("viewPos", camera.Position);
-
-		//---------test cube----------//
-		glBindVertexArray(lightVAO);
-		//createCube(modelShader, glm::vec3(0.0f), glm::vec3(1.0f), 0);
-
-		//---------model----------//
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)winW / (float)winH, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		modelShader.setMat4("projection", projection);
-		modelShader.setMat4("view", view);
-
+		deepShader.use();
 		glm::mat4 model;
-		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
-		modelShader.setMat4("model", model);
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)winW / (float)winH, 0.1f, 100.0f);
+		deepShader.setMat4("view", view);
+		deepShader.setMat4("projection", projection);
+		// cubes
+		glBindVertexArray(lightVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureId_0);
+		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+		deepShader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		ourModel.Draw(modelShader);
+		model = glm::mat4();
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+		deepShader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
+		// floor
+		glBindVertexArray(floorVAO);
+		glBindTexture(GL_TEXTURE_2D, textureId_0);
+		deepShader.setMat4("model", glm::mat4());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
