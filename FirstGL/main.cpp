@@ -18,7 +18,7 @@ float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX = winW / 2.0f;
 float lastY = winH / 2.0f;
-unsigned int _VBO, lightVAO, _EBO, lampVAO, floorVAO, floorVBO;
+unsigned int _VBO, lightVAO, _EBO, lampVAO, floorVAO, floorVBO, rectVAO, rectVBO;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 glm::vec3 lightPos(1.0f, 0.0f, 1.0f);
 
@@ -38,6 +38,17 @@ float planeVertices[] = {
 	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
 	5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
+
+float rectVertices[] = {
+	-0.5f , 0.5f , 0,	0.0f,  1.0f,
+	0.5f  , 0.5f , 0,	1.0f,  1.0f,
+	0.5f  , -0.5f, 0,	1.0f,  0.0f,
+	
+	-0.5f , 0.5f , 0,	0.0f,  1.0f,
+	0.5f  , -0.5f, 0,	1.0f,  0.0f,
+	-0.5f , -0.5f, 0,	0.0f,  0.0f,
+};
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -184,7 +195,7 @@ void initVAO() {
 
 	glVertexAttribPointer(0, 3, GL_FLOAT , GL_FALSE , 8 * sizeof(float) , (void*)0);
 	glEnableVertexAttribArray(0);
-
+	glBindVertexArray(0);
 	//-----------------floor--------------------//
 	glGenVertexArrays(1, &floorVAO);
 	glBindVertexArray(floorVAO);
@@ -198,7 +209,22 @@ void initVAO() {
 
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
 	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	//----------------rect---------------//
+	glGenBuffers(1, &rectVAO);
+	glBindVertexArray(rectVAO);
+
+	glGenBuffers(1, &rectVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertices), rectVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 }
+
 GLFWwindow* initGL(){
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -282,68 +308,30 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		glm::mat4 model;
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)winW / (float)winH, 0.1f, 100.0f);
 
-		profileShader.use();
-		profileShader.setMat4("view", view);
-		profileShader.setMat4("projection", projection);
-
 		deepShader.use();
 		deepShader.setMat4("view", view);
 		deepShader.setMat4("projection", projection);
+		deepShader.setMat4("model", model);
 
-		glStencilMask(0x00);
-		// floor
-		glBindVertexArray(floorVAO);
-		glBindTexture(GL_TEXTURE_2D, textureId_0);
-		deepShader.setMat4("model", glm::mat4());
+		glStencilFunc(GL_EQUAL, 0x1, 0x1);
+		glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
+
+		glBindTexture(GL_TEXTURE0, textureId_0);
+		glBindVertexArray(rectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		//---------------------------------//
 
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-
-		glBindVertexArray(lightVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureId_0);
-
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+		glStencilFunc(GL_NOTEQUAL, 3, 0x1);
+		model = glm::scale(model, glm::vec3(1.5));
 		deepShader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		model = glm::mat4();
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		deepShader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
-		//2 second
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-
-		float scale = 1.1f;
-		profileShader.use();
-		glBindVertexArray(lightVAO);
-
-		model = glm::mat4();
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-		model = glm::scale(model, glm::vec3(scale));
-		profileShader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		model = glm::mat4();
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(scale));
-		profileShader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glStencilMask(0xFF);
-		glEnable(GL_DEPTH_TEST);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
