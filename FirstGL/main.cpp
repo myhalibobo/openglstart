@@ -116,47 +116,47 @@ unsigned int createTexture(const char *texturePath , bool isPng) {
 
 void initVAO() {
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,  0.0f, -1.0f,  
+         0.5f, -0.5f, -0.5f, 1.0f,  0.0f, 0.0f,  0.0f, -1.0f,  
+         0.5f,  0.5f, -0.5f, 1.0f,  1.0f, 0.0f,  0.0f, -1.0f,  
+         0.5f,  0.5f, -0.5f, 1.0f,  1.0f, 0.0f,  0.0f, -1.0f,  
+        -0.5f,  0.5f, -0.5f, 0.0f,  1.0f, 0.0f,  0.0f, -1.0f,  
+        -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,  0.0f, -1.0f,  
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, 0.0f,  0.0f, 0.0f,  0.0f,  1.0f,  
+         0.5f, -0.5f,  0.5f, 1.0f,  0.0f, 0.0f,  0.0f,  1.0f,  
+         0.5f,  0.5f,  0.5f, 1.0f,  1.0f, 0.0f,  0.0f,  1.0f,  
+         0.5f,  0.5f,  0.5f, 1.0f,  1.0f, 0.0f,  0.0f,  1.0f,  
+        -0.5f,  0.5f,  0.5f, 0.0f,  1.0f, 0.0f,  0.0f,  1.0f,  
+        -0.5f, -0.5f,  0.5f, 0.0f,  0.0f, 0.0f,  0.0f,  1.0f,  
 
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, 1.0f,  0.0f,-1.0f,  0.0f,  0.0f,  
+        -0.5f,  0.5f, -0.5f, 1.0f,  1.0f,-1.0f,  0.0f,  0.0f,  
+        -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,-1.0f,  0.0f,  0.0f,  
+        -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,-1.0f,  0.0f,  0.0f,  
+        -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,-1.0f,  0.0f,  0.0f,  
+        -0.5f,  0.5f,  0.5f, 1.0f,  0.0f,-1.0f,  0.0f,  0.0f,  
 
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f, 1.0f,  0.0f, 1.0f,  0.0f,  0.0f,  
+         0.5f,  0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  0.0f,  0.0f,  
+         0.5f, -0.5f, -0.5f, 0.0f,  1.0f, 1.0f,  0.0f,  0.0f,  
+         0.5f, -0.5f, -0.5f, 0.0f,  1.0f, 1.0f,  0.0f,  0.0f,  
+         0.5f, -0.5f,  0.5f, 0.0f,  0.0f, 1.0f,  0.0f,  0.0f,  
+         0.5f,  0.5f,  0.5f, 1.0f,  0.0f, 1.0f,  0.0f,  0.0f,  
 
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, -1.0f,  0.0f,  
+         0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 0.0f, -1.0f,  0.0f,  
+         0.5f, -0.5f,  0.5f, 1.0f,  0.0f, 0.0f, -1.0f,  0.0f,  
+         0.5f, -0.5f,  0.5f, 1.0f,  0.0f, 0.0f, -1.0f,  0.0f,  
+        -0.5f, -0.5f,  0.5f, 0.0f,  0.0f, 0.0f, -1.0f,  0.0f,  
+        -0.5f, -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, -1.0f,  0.0f,  
 
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+        -0.5f,  0.5f, -0.5f, 0.0f,  1.0f, 0.0f,  1.0f,  0.0f,  
+         0.5f,  0.5f, -0.5f, 1.0f,  1.0f, 0.0f,  1.0f,  0.0f,  
+         0.5f,  0.5f,  0.5f, 1.0f,  0.0f, 0.0f,  1.0f,  0.0f,  
+         0.5f,  0.5f,  0.5f, 1.0f,  0.0f, 0.0f,  1.0f,  0.0f,  
+        -0.5f,  0.5f,  0.5f, 0.0f,  0.0f, 0.0f,  1.0f,  0.0f,  
+        -0.5f,  0.5f, -0.5f, 0.0f,  1.0f, 0.0f,  1.0f,  0.0f,  
 	};
 		
 	glGenVertexArrays(1, &lightVAO);
@@ -242,7 +242,16 @@ int main() {
 	Shader deepShader("shader/heighGL.vsh", "shader/heighGL.hlsl");
 	deepShader.use();
 
+	Shader profileShader("shader/heighGL.vsh", "shader/profile.hlsl");
+	profileShader.use();
+
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_ALWAYS, 1, 0xff);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 
 	std::function<void(Shader, glm::vec3, glm::vec3, float)> createCube = [=](Shader shader, glm::vec3 pos, glm::vec3 scale, float angle) {
 		glActiveTexture(GL_TEXTURE0);
@@ -274,18 +283,35 @@ int main() {
 		lastFrame = currentFrame;
 
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		deepShader.use();
 		glm::mat4 model;
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)winW / (float)winH, 0.1f, 100.0f);
+
+		profileShader.use();
+		profileShader.setMat4("view", view);
+		profileShader.setMat4("projection", projection);
+
+		deepShader.use();
 		deepShader.setMat4("view", view);
 		deepShader.setMat4("projection", projection);
-		// cubes
+
+		glStencilMask(0x00);
+		// floor
+		glBindVertexArray(floorVAO);
+		glBindTexture(GL_TEXTURE_2D, textureId_0);
+		deepShader.setMat4("model", glm::mat4());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//---------------------------------//
+
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
 		glBindVertexArray(lightVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId_0);
+
 		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
 		deepShader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -295,12 +321,29 @@ int main() {
 		deepShader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		
-		// floor
-		glBindVertexArray(floorVAO);
-		glBindTexture(GL_TEXTURE_2D, textureId_0);
-		deepShader.setMat4("model", glm::mat4());
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//2 second
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
 
+		float scale = 1.1f;
+		profileShader.use();
+		glBindVertexArray(lightVAO);
+
+		model = glm::mat4();
+		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+		model = glm::scale(model, glm::vec3(scale));
+		profileShader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4();
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(scale));
+		profileShader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glStencilMask(0xFF);
+		glEnable(GL_DEPTH_TEST);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
