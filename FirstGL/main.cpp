@@ -259,7 +259,7 @@ int main() {
 	GLFWwindow* window = initGL();
 	
 	unsigned int textureId_0 = createTexture("container2.png",true);
-	unsigned int textureGrass = createTexture("grass.png", true);
+	unsigned int textureGrass = createTexture("blending_transparent_window.png", true);
 	unsigned int textureFloor = createTexture("blending_transparent_window.png", true);
 
 	initVAO();
@@ -273,6 +273,9 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+	glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
 	//glEnable(GL_STENCIL_TEST);
 	//glStencilFunc(GL_ALWAYS, 1, 0xff);
 	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -340,20 +343,29 @@ int main() {
 		deepShader.setMat4("model", glm::mat4());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		
+		std::map<float, glm::vec3> sorted;
+		for (unsigned int i = 0; i < vegetation.size(); i++) {
+			float length = glm::length(camera.Position - vegetation[i]);
+			sorted[length] = vegetation[i];
+		}
+
 		discardShader.use();
 		discardShader.setMat4("view", view);
 		discardShader.setMat4("projection", projection);
 		glBindVertexArray(rectVAO);
 		glBindTexture(GL_TEXTURE_2D, textureGrass);
-		for (int i = 0; i < vegetation.size(); i++)
-		{
-			cout << i << endl;
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_DST_COLOR);
+		std::map<float, glm::vec3>::reverse_iterator it;
+		for (it = sorted.rbegin(); it != sorted.rend(); it++) {
 			glm::mat4 model;
-			model = glm::translate(model, vegetation[i]);
+			model = glm::translate(model, it->second);
 			discardShader.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
+
+		glDisable(GL_BLEND);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
