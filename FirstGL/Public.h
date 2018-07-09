@@ -35,16 +35,16 @@ float rectVertices[] = {
 	-0.5f , -0.5f, 0,	0.0f,  0.0f,
 };
 
-float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-						 // positions   // texCoords
-	-1.0f,  1.0f,  0.0f, 1.0f,
-	-1.0f, -1.0f,  0.0f, 0.0f,
-	1.0f, -1.0f,  1.0f, 0.0f,
-
-	-1.0f,  1.0f,  0.0f, 1.0f,
-	1.0f, -1.0f,  1.0f, 0.0f,
-	1.0f,  1.0f,  1.0f, 1.0f
-};
+//float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+//						 // positions   // texCoords
+//	-1.0f,  1.0f,  0.0f, 1.0f,
+//	-1.0f, -1.0f,  0.0f, 0.0f,
+//	1.0f, -1.0f,  1.0f, 0.0f,
+//
+//	-1.0f,  1.0f,  0.0f, 1.0f,
+//	1.0f, -1.0f,  1.0f, 0.0f,
+//	1.0f,  1.0f,  1.0f, 1.0f
+//};
 
 float skyboxVertices[] = {
 	// positions          
@@ -178,4 +178,22 @@ float cubeTextureVertex[] = {
          0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,	 1.0f, 0.0f,
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,	 0.0f, 1.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,	 0.0f, 0.0f, 
+};
+
+float points[] = {
+	-0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // top-left
+	0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-right
+	0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
+	-0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
+};
+
+float quadVertices[] = {
+	// Î»ÖÃ          // ÑÕÉ«
+	-0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+	0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+	-0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+
+	-0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+	0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+	0.05f,  0.05f,  0.0f, 1.0f, 1.0f
 };

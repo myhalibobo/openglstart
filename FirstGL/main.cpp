@@ -25,8 +25,9 @@ float lastY = winH / 2.0f;
 unsigned int _VBO, lightVAO, _EBO, lampVAO, floorVAO, floorVBO, rectVAO, rectVBO , cubeVAO , cubeVBO;
 unsigned int quadVAO, quadVBO;
 unsigned int skyboxVAO, skyboxVBO;
+unsigned int geometryVAO, geometryVBO;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 155.0f));
 glm::vec3 lightPos(1.0f, 0.0f, 1.0f);
 
 
@@ -165,6 +166,72 @@ void initVAO() {
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
+	//---------------geometry------------------//
+	glGenBuffers(1, &geometryVAO);
+	glBindVertexArray(geometryVAO);
+	
+	glGenBuffers(1, &geometryVBO);
+	glBindBuffer(GL_ARRAY_BUFFER,geometryVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float)*2));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
+	//----------------texture--------------//
+	glGenVertexArrays(1, &rectVAO);
+	glBindVertexArray(rectVAO);
+
+	glGenBuffers(1, &rectVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertices), rectVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
+
+	//----------------texture--------------//
+
+	glm::vec2 translations[100];
+	int index = 0;
+	float offset = 0.1;
+	for (int y = -10; y < 10; y += 2) {
+		for (int x = -10; x < 10; x += 2) {
+			glm::vec2 translation;
+			translation.x = (float)x / 10.0f + offset;
+			translation.y = (float)y / 10.0f + offset;
+			translations[index++] = translation;
+			cout << translation.x << " " << translation.y << endl;
+		}
+	}
+	unsigned int instanceVBO;
+	glGenBuffers(1, &instanceVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, &quadVAO);
+	glBindVertexArray(quadVAO);
+
+	glGenBuffers(1, &quadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(0));
+	glEnableVertexAttribArray(2);
+	glVertexAttribDivisor(2, 1);
 }
 
 GLFWwindow* initGL(){
@@ -202,19 +269,26 @@ int main() {
 	
 	GLFWwindow* window = initGL();
 	
-	unsigned int textureId_0 = createTexture("container2.png",true);
+	unsigned int textureId_0 = createTexture("awesomeface.png",true);
 	unsigned int textureGrass = createTexture("blending_transparent_window.png", true);
-	unsigned int textureFloor = createTexture("blending_transparent_window.png", true);
-	
 	unsigned int cubemapTexture = loadCubemap(faces);
 
 	initVAO();
 
-	Shader skyShader("shader/skyShader.vsh", "shader/skyShader.hlsl");
-	skyShader.use();
+	Shader geometryShader = Shader("shader/geometry.vsh", "shader/geometry.hlsl");
+	geometryShader.use();
 
-	Shader cubeShader("shader/cubeTexture.vsh", "shader/cubeTexture.hlsl");
-	cubeShader.use();
+	Shader textureShader = Shader("shader/texture.vsh", "shader/texture.hlsl");
+	textureShader.use();
+
+	Shader insShader = Shader("shader/ins.vsh", "shader/ins.hlsl");
+	insShader.use();
+
+	Shader planetShader = Shader("shader/planet.vsh", "shader/planet.hlsl");
+	planetShader.use();
+
+	Model planet("planet/planet.obj");
+	Model rock("rock/rock.obj");
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -226,7 +300,7 @@ int main() {
 
 	unsigned int lights_index = glGetUniformBlockIndex(1, "Lights");
 	glUniformBlockBinding(1, lights_index, 2);
-
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
@@ -237,36 +311,22 @@ int main() {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glDepthFunc(GL_LEQUAL);
-		skyShader.use();
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)winW / (float)winH, 0.1f, 1000.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		planetShader.use();
+		planetShader.setMat4("projection", projection);
+		planetShader.setMat4("view", view);
 
+		// draw planet
 		glm::mat4 model;
-		glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+		model = glm::rotate(model, (float)glfwGetTime() / 10.0f, glm::vec3(0.4f, 0.6f, 0.8f));
+		model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), winW / winH, 0.1f, 100.0f);
-
-		skyShader.setMat4("model", model);
-		skyShader.setMat4("view", view);
-		skyShader.setMat4("projection", projection);
-
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glBindVertexArray(skyboxVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glBindVertexArray(0);
-
-		//----------cubeTexture------------//
-		glDepthFunc(GL_LESS);
-		cubeShader.use();
-		cubeShader.setVec3("cameraPos", camera.Position);
-		cubeShader.setMat4("model", model);
-		cubeShader.setMat4("view", camera.GetViewMatrix());
-		cubeShader.setMat4("projection", projection);
-
-
-		glBindTexture(GL_TEXTURE_2D, textureId_0);
-		glBindVertexArray(cubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		planetShader.setMat4("model", model);
+		planet.Draw(planetShader);
+	
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
