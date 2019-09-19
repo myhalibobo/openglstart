@@ -5,9 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class GLProgram
 {
+public:
 	unsigned int program_id;
 	unsigned int vertex_shader;
 	unsigned int fragment_shader;
@@ -48,6 +52,9 @@ public:
 	}
 	void setFloat4(const std::string &name, float p1, float p2, float p3, float p4) {
 		glUniform4f(glGetUniformLocation(program_id, name.c_str()), p1, p2, p3, p4);
+	}
+	void setMat4(const std::string &name, glm::mat4 &mat) {
+		glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
 private:
