@@ -428,8 +428,6 @@ int main() {
 		}
 
 
-		//glBlendFunc(GL_DST_ALPHA, GL_ZERO);
-		glBlendFunc(GL_ONE, GL_ZERO);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0,3,0));
 		model = glm::scale(model, glm::vec3(3, 3, 3));
@@ -439,15 +437,11 @@ int main() {
 		glBindVertexArray(transparentVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0, 3, 0.01));
-		model = glm::scale(model, glm::vec3(2, 2, 2));
-		grassShader.setMat4("model", model);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_black);
-		glBindVertexArray(transparentVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glBlendFunc(GL_DST_ALPHA, GL_ZERO);
+ 		
+// 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+// 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
+// 		glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0, 3, 0.02));
@@ -458,9 +452,22 @@ int main() {
 		glBindVertexArray(transparentVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0, 3, 0.01));
+		model = glm::scale(model, glm::vec3(2, 2, 2));
+		grassShader.setMat4("model", model);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture_black);
+		glBindVertexArray(transparentVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
 
+
+
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_STENCIL_TEST);
         glfwSwapBuffers(window);
         glfwPollEvents();
