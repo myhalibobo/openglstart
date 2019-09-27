@@ -20,7 +20,7 @@ float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX = winW / 2.0f;
 float lastY = winH / 2.0f;
-unsigned int VBO, VAO, EBO, planeVAO, CubeVAO, transparentVAO, texture1, texture2, texture3, texture4, texture_level, texture_black, texture_aureole;
+unsigned int VBO, VAO, EBO, planeVAO, CubeVAO, transparentVAO, texture1, texture2, texture3, texture4, texture_level, texture_black, texture_aureole, fbo;
 
 Camera camera(glm::vec3(0.0f, 1.0f, 3.0f));
 
@@ -319,7 +319,13 @@ int main() {
     glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glEnable(GL_STENCIL_TEST);
-    
+// 	glEnable(GL_CULL_FACE);
+// 	glCullFace(GL_FRONT
+	//create frame buffer
+	glGenFramebuffers(GL_FRAMEBUFFER, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	//
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = glfwGetTime();
@@ -437,12 +443,6 @@ int main() {
 		glBindVertexArray(transparentVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		//glBlendFunc(GL_DST_ALPHA, GL_ZERO);
- 		
-// 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-// 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
-// 		glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0, 3, 0.02));
 		model = glm::scale(model, glm::vec3(1, 1, 1));
@@ -452,7 +452,13 @@ int main() {
 		glBindVertexArray(transparentVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//		glBlendFunc(GL_DST_ALPHA, GL_ZERO);
+// 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+// 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
+// 		glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+		glBlendFunc(GL_DST_ALPHA, GL_ZERO);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0, 3, 0.01));
 		model = glm::scale(model, glm::vec3(2, 2, 2));
@@ -461,11 +467,6 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture_black);
 		glBindVertexArray(transparentVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-
-
-
-
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_STENCIL_TEST);
