@@ -20,7 +20,10 @@ float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX = winW / 2.0f;
 float lastY = winH / 2.0f;
-unsigned int VBO, VAO, EBO, planeVAO, CubeVAO, transparentVAO, texture1, texture2, texture3, texture4, texture_level, texture_black, texture_aureole, fbo;
+unsigned int VBO, VAO, EBO, planeVAO, CubeVAO,
+transparentVAO, texture1, texture2, texture3,
+texture4, texture_level, texture_black,
+texture_aureole, fbo,rbo, textureColorbuffer, quadVAO;
 
 Camera camera(glm::vec3(0.0f, 1.0f, 3.0f));
 
@@ -140,7 +143,15 @@ void initVAO() {
         1.0f, -0.5f,  0.0f,  1.0f,  0.0f,
         1.0f,  0.5f,  0.0f,  1.0f,  1.0f
     };
-    
+	float quadVertices[] = { 
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f,  -1.0f,  0.0f, 0.0f,
+		1.0f,  -1.0f,  1.0f, 0.0f,
+
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		1.0f,  -1.0f,  1.0f, 0.0f,
+		1.0f,  1.0f,  1.0f, 1.0f
+	};
     
     glGenVertexArrays(1,&VAO);
     glGenBuffers(1, &VBO);
@@ -199,6 +210,25 @@ void initVAO() {
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+	//------------------------------------//
+
+	unsigned int qVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glBindVertexArray(quadVAO);
+
+	glGenBuffers(1, &qVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, qVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 unsigned int loadTexture(const char * path, int wrap) {
@@ -264,12 +294,36 @@ GLFWwindow* initGL(){
 	return window;
 }
 
+void createFramebuffer() {
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, winW, winH, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, winW, winH);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 int main() {
 	
 	GLFWwindow* window = initGL();
     GLProgram glProgram("shader/shader.vsh", "shader/shader.fsh");
     GLProgram singColorShader("shader/shader.vsh", "shader/singleColor.fsh");
-    GLProgram grassShader("shader/shader.vsh", "shader/discardFragment.fsh");
+	GLProgram grassShader("shader/shader.vsh", "shader/discardFragment.fsh");
+	GLProgram frameBufferShader("shader/screenFrameBufferShader.vs", "shader/screenFrameBufferShader.fsh");
     
     initVAO();
     texture1 = loadTexture("Image/wall.jpg",GL_REPEAT);
@@ -314,6 +368,7 @@ int main() {
         glm::vec3(-0.9f, 0.0f, -1.3f),
         glm::vec3( -0.5f, 0.0f, 3.6f)
     };
+
     
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -321,10 +376,9 @@ int main() {
     glEnable(GL_STENCIL_TEST);
 // 	glEnable(GL_CULL_FACE);
 // 	glCullFace(GL_FRONT
+
 	//create frame buffer
-	glGenFramebuffers(GL_FRAMEBUFFER, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	//
+	createFramebuffer();
 
     while (!glfwWindowShouldClose(window))
     {
@@ -333,8 +387,10 @@ int main() {
         lastFrame = currentFrame;
         processInput(window);
         
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		
 
         glStencilMask(0x00);
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)winW / (float)winH, 0.1f, 100.0f);
@@ -470,6 +526,16 @@ int main() {
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_STENCIL_TEST);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		frameBufferShader.use();
+		glBindVertexArray(quadVAO);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
