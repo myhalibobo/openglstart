@@ -1,14 +1,2 @@
-﻿  main.cpp
-d:\opengl_study\openglstudy\openglstudy\main.cpp(35): warning C4244: “参数”: 从“const float”转换到“int”，可能丢失数据
-d:\opengl_study\openglstudy\openglstudy\main.cpp(55): warning C4244: “参数”: 从“const float”转换到“GLsizei”，可能丢失数据
-main.obj : error LNK2019: 无法解析的外部符号 gladLoadGLLoader，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwInit，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwTerminate，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwWindowHint，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwCreateWindow，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwSetFramebufferSizeCallback，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwSetInputMode，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwMakeContextCurrent，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2019: 无法解析的外部符号 glfwGetProcAddress，该符号在函数 "struct GLFWwindow * __cdecl initGL(void)" (?initGL@@YAPEAUGLFWwindow@@XZ) 中被引用
-main.obj : error LNK2001: 无法解析的外部符号 glad_glViewport
-D:\opengl_study\OpenGLStudy\x64\Debug\OpenGLStudy.exe : fatal error LNK1120: 10 个无法解析的外部命令
+﻿  glad.c
+d:\openglstart\openglstudy\openglstudy\glad.c(24): fatal error C1083: 无法打开包括文件: “glad/glad.h”: No such file or directory

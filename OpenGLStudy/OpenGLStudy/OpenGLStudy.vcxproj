@@ -69,7 +69,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)..\..\glfw\glfw-3.2.1\include;$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\opengl_study\include\glfw;$(IncludePath)</IncludePath>
